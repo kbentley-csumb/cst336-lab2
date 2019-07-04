@@ -125,9 +125,9 @@ function updateMan() {
 
 function endGame(win) {
     $("#letters").hide();
-
+    
     if(win) {
-        if(!(selectedWord in previousGuesses)) {
+        if(!previousGuesses.includes(selectedWord)) {
             previousGuesses.push(selectedWord);
         }
         $('#won').show();
