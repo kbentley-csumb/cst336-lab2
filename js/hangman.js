@@ -1,5 +1,6 @@
 var selectedWord = "";
 var selectedHint = "";
+var showingHint = false;
 var board = [];
 var remainingGuesses = 6;
 var words = [
@@ -15,8 +16,7 @@ var alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 function startGame() {
     pickWord();
     createLetters();
-    initBoard();
-    
+    initBoard();    
     updateBoard();
 }
 
@@ -24,6 +24,7 @@ function pickWord() {
     var randomInt = Math.floor(Math.random() * words.length);
     selectedWord = words[randomInt].word;
     selectedHint = words[randomInt].hint;
+    showingHint = false;
 }
 
 function initBoard() {
@@ -38,21 +39,37 @@ function updateBoard() {
         $("#word").append(board[i] + " ");
     }
     $("#word").append("<br >");
-    $("#word").append("<span class='hint'>Hint: " + selectedHint + "</span>");
+    if(!showingHint) {
+        $("#word").append("<a href='#' id='showHint'><span class='hint'>Click to Show Hint</span> </a>");
+    }
+    else {
+        $("#word").append("<span class='hint'>Hint: " + selectedHint + "</span>");
+    }
+    updateGuessesRemaining();
 }
-
-/*
-$("#letterBtn").click(function() {
-    var boxVal = $("#letterBox").val();
-    console.log("You pressed the button and it had the value: " + boxVal);
-});
-
-*/
 
 function createLetters() {
     for(var letter of alphabet) {
         $("#letters").append("<button class='letter btn btn-success' id='" + letter + "'>" + letter + "</button>");
     }
+}
+
+function updateGuessesRemaining() {
+    $("#remainingGuesses").empty();
+    if(remainingGuesses < 2) {
+        $("#remainingGuesses").css("background-color", "red")
+        
+    }
+    else if(remainingGuesses < 4) {
+        $("#remainingGuesses").css("background-color", "yellow")
+    }
+    if(remainingGuesses==1) {
+        $("#remainingGuesses").append(remainingGuesses + " guess remaining.");
+    }
+    else {
+        $("#remainingGuesses").append(remainingGuesses + " guesses remaining.");
+    }
+    
 }
 
 function checkLetter(letter) {
@@ -79,6 +96,7 @@ function checkLetter(letter) {
     if (remainingGuesses <= 0) {
         endGame(false);
     }
+    updateGuessesRemaining();
 }
 
 function updateWord(positions, letter) {
@@ -118,3 +136,13 @@ $(".letter").click(function(){
 $(".replayBtn").click(function() {
     location.reload();
 });
+
+$("#showHint").click(function() {
+    showingHint = true;
+    updateBoard();
+    remainingGuesses -= 1;
+    if (remainingGuesses <= 0) {
+        endGame(false);
+    }
+
+})
