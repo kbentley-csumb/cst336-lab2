@@ -68,10 +68,20 @@ function checkLetter(letter) {
         }
     }
 
-    if (positions.length > 0) {
+    if(positions.length > 0) {
         updateWord(positions, letter);
+
+        // Check to see if this is a winning guess
+        if (!board.includes('_')) {
+            endGame(true);
+        }
     } else {
         remainingGuesses -= 1;
+        updateMan();
+    }
+
+    if (remainingGuesses <= 0) {
+        endGame(false);
     }
 }
 
@@ -83,7 +93,7 @@ function updateWord(positions, letter) {
 }
 
 function updateMan() {
-    $("#hangImg").attr("src", "img/stick_" + (6 - remainingGuesses) + "png");
+    $("#hangImg").attr("src", "img/stick_" + (6 - remainingGuesses) + ".png");
 }
 
 function endGame(win) {
@@ -101,4 +111,8 @@ window.onload = startGame();
 $(".letter").click(function(){
     //console.log($(this).attr("id"));
     checkLetter($(this).attr("id"));
+});
+
+$(".replayBtn").click(function() {
+    location.reload();
 });
