@@ -3,6 +3,7 @@ var selectedHint = "";
 var showingHint = false;
 var board = [];
 var remainingGuesses = 6;
+var previousGuesses = [];
 var words = [
     {word: "snake", hint: "It's a reptile" },
     {word: "monkey", hint:"It's a mammal" },
@@ -31,6 +32,14 @@ function initBoard() {
     for(var letter in selectedWord) {
         board.push("_");
     }
+    $("#previousGuesses").empty();
+    if(previousGuesses.length > 0) {
+        $("#previousGuesses").append("<br>You previously guessed:<br><ul>");
+        for(var word of previousGuesses) {
+            $("#previousGuesses").append("<li>" + word + "</li>\n");
+        }
+        $("#previousGuesses").append("</ul>");
+    }
 }
 
 function updateBoard() {
@@ -40,17 +49,21 @@ function updateBoard() {
     }
     $("#word").append("<br >");
     if(!showingHint) {
-        $("#word").append("<a href='#' id='showHint'><span class='hint'>Click to Show Hint</span> </a>");
+        $("#word").append("<a href='#' id='showHint' onclick='hintClick()'><span class='hint'>Click to Show Hint</span> </a>");
     }
     else {
         $("#word").append("<span class='hint'>Hint: " + selectedHint + "</span>");
     }
+    
+    $("#remainingGuesses").empty();
     updateGuessesRemaining();
 }
 
 function createLetters() {
+    $("#letters").empty();
+    $("#letters").show();
     for(var letter of alphabet) {
-        $("#letters").append("<button class='letter btn btn-success' id='" + letter + "'>" + letter + "</button>");
+        $("#letters").append("<button class='letter btn btn-success' onclick='letterClick(this)' id='" + letter + "'>" + letter + "</button>");
     }
 }
 
@@ -114,6 +127,9 @@ function endGame(win) {
     $("#letters").hide();
 
     if(win) {
+        if(!(selectedWord in previousGuesses)) {
+            previousGuesses.push(selectedWord);
+        }
         $('#won').show();
     } else {
         $('#lost').show();
@@ -127,22 +143,27 @@ function disableButton(btn) {
 
 window.onload = startGame();
 
-$(".letter").click(function(){
-    //console.log($(this).attr("id"));
-    checkLetter($(this).attr("id"));
-    disableButton($(this));
-});
+function letterClick(elem) {
+    checkLetter($(elem).attr("id"));
+    disableButton($(elem));
+}
 
 $(".replayBtn").click(function() {
-    location.reload();
+    remainingGuesses = 6;
+    showingHint = false;
+    $('#won').hide();
+    $('#lost').hide();
+    $('#replayBtn').hide();
+    $("#remainingGuesses").css("background-color", "white")
+    board = [];
+    startGame();
 });
 
-$("#showHint").click(function() {
-    showingHint = true;
-    updateBoard();
+function hintClick() {
+    showingHint = true;    
     remainingGuesses -= 1;
     if (remainingGuesses <= 0) {
         endGame(false);
     }
-
-})
+    updateBoard();
+}

@@ -42,6 +42,7 @@
                 <img src="img/stick_0.png" id="hangImg">
             </div>
             <div id="remainingGuesses"></div>
+            <div id="previousGuesses"></div>
         </div>
         <script src="js/hangman.js"> </script>
     </body>
